@@ -1,0 +1,23 @@
+.fighter-preview___root {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 250px;
+}
+
+.fighter-preview___right {
+  align-items: flex-end;
+}
+
+.fighter-preview___left {
+  align-items: flex-start;
+}
+.fighter-preview__info{
+  color:white;
+  background-color: black;
+}
+.fighter-preview___img{
+  max-height: 300px;
+}
+.fighter-preview___right .fighter-preview___img{
+  transform: scale(-1, 1);
+}
