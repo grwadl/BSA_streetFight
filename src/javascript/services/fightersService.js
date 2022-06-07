@@ -17,8 +17,7 @@ class FighterService {
       return await callApi(`details/fighter/${id}.json`);
     }
     catch(e){
-      const root = document.getElementById('root');
-      root.innerText = 'Failed to fetch some data';
+      throw new Error('Failed to fetch data')
     }
   }
 }

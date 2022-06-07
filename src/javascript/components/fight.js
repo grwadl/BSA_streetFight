@@ -111,6 +111,7 @@ export async function fight(firstFighter, secondFighter) {
                     power === 0 ? fightersModels[1].classList.add('dodged') : secondFighter.health -= power;
                     indicateDamage(minusHPRight,power);
                     setTimeout(() => fightersModels[1].classList.remove('dodged'), 400);
+                    console.log(secondFighter.health)
                     healthBarRight.style.width = secondFighter.health > 0
                         ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
                     return secondFighter.health <= 0 ? resolve(firstFighter) : secondFighter.health;
