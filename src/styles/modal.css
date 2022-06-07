@@ -38,3 +38,7 @@
   line-height: 1;
   cursor: pointer;
 }
+.fighter-preview___img{
+  display: flex;
+  margin: 0 auto;
+}
