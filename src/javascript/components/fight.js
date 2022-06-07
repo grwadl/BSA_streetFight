@@ -31,7 +31,6 @@ export async function fight(firstFighter, secondFighter) {
         minusHP.innerText = `-${Math.ceil(power)}`;
         setTimeout(()=>minusHP.innerText ='',400)
     }
-
     return new Promise((resolve) => {
         document.body.addEventListener("keydown", e => {
             switch (e.code) {
@@ -110,7 +109,7 @@ export async function fight(firstFighter, secondFighter) {
                     const power=getDamage(firstFighter, secondFighter);
                     power === 0 ? fightersModels[1].classList.add('dodged') : secondFighter.health -= power;
                     indicateDamage(minusHPRight,power);
-                    setTimeout(() => fightersModels[1].classList.remove('dodged'), 400);
+                    setTimeout(() => fightersModels[1].classList.remove('dodged'), 400)
                     healthBarRight.style.width = secondFighter.health > 0
                         ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
                     return secondFighter.health <= 0 ? resolve(firstFighter) : secondFighter.health;
