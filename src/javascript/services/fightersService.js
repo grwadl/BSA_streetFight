@@ -17,7 +17,7 @@ class FighterService {
       return  await callApi(`details/fighter/${id}.json`);
     }
     catch(e){
-      console.log(e)
+      alert('wrong url')
     }
   }
 }
