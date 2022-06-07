@@ -36,8 +36,6 @@ function renderSelectedFighters(selectedFighters) {
   const firstPreview = createFighterPreview(playerOne, 'left');
   const secondPreview = createFighterPreview(playerTwo, 'right');
   const versusBlock = createVersusBlock(selectedFighters);
-  console.log(firstPreview)
-
   fightersPreview.innerHTML = '';
   fightersPreview.append(firstPreview, versusBlock, secondPreview);
 }

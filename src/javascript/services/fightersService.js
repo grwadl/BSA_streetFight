@@ -14,10 +14,11 @@ class FighterService {
 
   async getFighterDetails(id) {
     try{
-      return  await callApi(`details/fighter/${id}.json`);
+      return await callApi(`details/fighter/${id}.json`);
     }
     catch(e){
-      alert('wrong url')
+      const root = document.getElementById('root');
+      root.innerText = 'Failed to fetch some data';
     }
   }
 }

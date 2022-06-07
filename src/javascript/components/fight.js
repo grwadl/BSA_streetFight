@@ -1,4 +1,5 @@
 import {controls} from "../../constants/controls";
+import {createElement} from "../helpers/domHelper";
 
 const setLeftPlayerRunning = () => {
     const img = document.querySelector('.arena___left-fighter');
@@ -20,38 +21,61 @@ export async function fight(firstFighter, secondFighter) {
     let playerTwoIsAbleToCrit = true;
     let startFirstPlayerHealth = firstFighter.health;
     let startSecondPlayerHealth = secondFighter.health;
+    let fightersModels = document.querySelectorAll('.arena___fighter');
+    const indicators = document.querySelectorAll('.arena___fighter-indicator');
+    const minusHPleft = createElement({tagName:'span',className:'minusHP'});
+    const minusHPRight = createElement({tagName:'span',className:'minusHP'});
+    indicators[0].appendChild(minusHPleft);
+    indicators[1].appendChild(minusHPRight);
+    const indicateDamage = (minusHP,power) =>{
+        minusHP.innerText = `-${Math.ceil(power)}`;
+        setTimeout(()=>minusHP.innerText ='',400)
+    }
+
     return new Promise((resolve) => {
         document.body.addEventListener("keydown", e => {
             switch (e.code) {
-                case controls.PlayerOneBlock:
+                case controls.PlayerOneBlock: {
+                    fightersModels[0].classList.add('onBlock')
                     return firstFighter.block = true;
-                case controls.PlayerTwoBlock:
+                }
+                case controls.PlayerTwoBlock: {
+                    fightersModels[1].classList.add('onBlock')
                     return secondFighter.block = true;
+                }
                 default:
                     return null;
             }
         })
         document.body.addEventListener("keyup", e => {
             switch (e.code) {
-                case controls.PlayerOneBlock:
+                case controls.PlayerOneBlock: {
+                    fightersModels[0].classList.remove('onBlock')
                     return firstFighter.block = false;
-                case controls.PlayerTwoBlock:
+                }
+                case controls.PlayerTwoBlock: {
+                    fightersModels[1].classList.remove('onBlock')
                     return secondFighter.block = false;
+                }
                 default:
                     return null;
             }
         });
         document.body.addEventListener('keypress', e => {
-            const critPunchFirst = () => { //сложно обрабатывать одновременные нажатия клавиш сразу для двух сущностей в одном методе/функции
+            const critPunchFirst = () => {
                 comboFirstPlayer += e.code;
                 if (controls.PlayerOneCriticalHitCombination.join('').includes(comboFirstPlayer)) {
                     if ((controls.PlayerOneCriticalHitCombination.join('') === comboFirstPlayer)) {
                         setLeftPlayerRunning();
                         comboFirstPlayer = '';
                         playerOneIsAbleToCrit = false;
-                        secondFighter.health = getCrit(firstFighter,secondFighter);
+                        const power =  getCrit(firstFighter);
+                        indicateDamage(minusHPRight,power);
+                        secondFighter.health -= power;
                         setTimeout(() => playerOneIsAbleToCrit = true, 10000);
-                       return  healthBarRight.style.width = `${(secondFighter.health * 100) / startSecondPlayerHealth}%`;
+                        healthBarRight.style.width = secondFighter.health>0
+                            ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
+                        return secondFighter.health <= 0 ? resolve(firstFighter) : null;
                     }
                 } else {
                     comboFirstPlayer = '';
@@ -63,38 +87,45 @@ export async function fight(firstFighter, secondFighter) {
                     if ((controls.PlayerTwoCriticalHitCombination.join('') === comboSecondPlayer)) {
                         setRightPlayerRunning();
                         comboSecondPlayer = '';
-                        firstFighter.health = getCrit(secondFighter,firstFighter);
+                        const power =  getCrit(secondFighter);
+                        indicateDamage(minusHPleft,power);
+                        firstFighter.health -= power;
                         playerTwoIsAbleToCrit = false;
                         setTimeout(() => playerTwoIsAbleToCrit = true, 10000);
-                        return healthBarLeft.style.width = `${(firstFighter.health * 100) / startFirstPlayerHealth}%`;
+                        healthBarLeft.style.width = firstFighter.health > 0 ?
+                            `${(firstFighter.health * 100) / startFirstPlayerHealth}%` : '0%';
+                        return firstFighter.health <= 0 ? resolve(secondFighter) : null;
                     }
                 } else {
                     comboSecondPlayer = '';
                 }
             }
-            if (playerOneIsAbleToCrit)
-                critPunchFirst()
-            if (playerTwoIsAbleToCrit)
-                critPunchSecond()
-            if (firstFighter?.health <= 0)
-                resolve(secondFighter);
-            else if (secondFighter?.health <= 0)
-                resolve(firstFighter);
+            if (playerOneIsAbleToCrit&&!firstFighter.block)
+                critPunchFirst();
+            if (playerTwoIsAbleToCrit&&!secondFighter.block)
+                critPunchSecond();
             switch (e.code) {
                 case controls.PlayerOneAttack: {
                     setLeftPlayerRunning();
-                    secondFighter.health = getDamage(firstFighter, secondFighter);
-                    return healthBarRight.style.width = `${(secondFighter.health * 100) / startSecondPlayerHealth}%`;
+                    const power=getDamage(firstFighter, secondFighter);
+                    power === 0 ? fightersModels[1].classList.add('dodged') : secondFighter.health -= power;
+                    indicateDamage(minusHPRight,power);
+                    setTimeout(() => fightersModels[1].classList.remove('dodged'), 400);
+                    healthBarRight.style.width = secondFighter.health > 0
+                        ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
+                    return secondFighter.health <= 0 ? resolve(firstFighter) : secondFighter.health;
                 }
                 case controls.PlayerTwoAttack: {
                     setRightPlayerRunning();
-                    firstFighter.health = getDamage(secondFighter, firstFighter);
-                    return healthBarLeft.style.width = `${(firstFighter.health * 100) / startFirstPlayerHealth}%`;
+                    const power = getDamage(secondFighter, firstFighter);
+                    power === 0 ? fightersModels[0].classList.add('dodged') : firstFighter.health -= power;
+                    indicateDamage(minusHPleft,power);
+                    setTimeout(() => fightersModels[0].classList.remove('dodged'), 400)
+                    healthBarLeft.style.width = firstFighter.health > 0 ?
+                        `${(firstFighter.health * 100) / startFirstPlayerHealth}%` : '0%';
+                    return firstFighter.health <= 0 ? resolve(secondFighter) : firstFighter.health;
                 }
-                default:
-                    return null;
             }
-
         })
     });
 
@@ -103,14 +134,15 @@ export async function fight(firstFighter, secondFighter) {
 export function getDamage(attacker, defender) {
     const hitPower = getHitPower(attacker);
     const blockPower = getBlockPower(defender);
+    const damage = hitPower - blockPower;
     if (!attacker.block) {
-        if (defender.block === true)
-            blockPower > hitPower ? defender.health : defender.health -= hitPower - blockPower;
-
+        if (defender.block) {
+            return damage <= 0 ? 0 : damage;
+        }
         else
-            defender.health -=hitPower;
+            return hitPower;
     }
-    return defender.health;
+    return 0;
 }
 
 export function getHitPower(fighter) {
@@ -119,8 +151,8 @@ export function getHitPower(fighter) {
     return power;
 }
 
-export function getCrit(fighter, defender) {
-    return defender.health -= fighter.attack * 2;
+export function getCrit(fighter) {
+    return fighter.attack * 2;
 }
 
 export function getBlockPower(fighter) {
