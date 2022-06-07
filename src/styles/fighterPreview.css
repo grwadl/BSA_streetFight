@@ -14,6 +14,7 @@
 .fighter-preview__info{
   color:white;
   background-color: black;
+  padding: 5px;
 }
 .fighter-preview___img{
   max-height: 300px;
