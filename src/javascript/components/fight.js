@@ -31,6 +31,34 @@ export async function fight(firstFighter, secondFighter) {
         minusHP.innerText = `-${Math.ceil(power)}`;
         setTimeout(()=>minusHP.innerText ='',400)
     }
+    const indicateCrit = (fighterModel)=>{
+        fighterModel.classList.add('critHit');
+        setTimeout(()=>fighterModel.classList.remove('critHit'),400);
+    }
+    const handlePunchFirstPlayer = (power)=>{
+        indicateDamage(minusHPRight,power);
+        secondFighter.health<20? healthBarRight.style.backgroundColor='red':'';
+        if(power){
+            fightersModels[1].classList.add('punched');
+            setTimeout(()=>fightersModels[1].classList.remove('punched'),200)
+        }
+        secondFighter.health -= power;
+        healthBarRight.style.width = secondFighter.health>0
+            ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
+        secondFighter.health<20? healthBarRight.style.backgroundColor='red':'';
+    }
+    const handlePunchSecondPlayer = (power)=>{
+        indicateDamage(minusHPRight,power);
+        if(power){
+            fightersModels[0].classList.add('punched');
+            setTimeout(()=>fightersModels[0].classList.remove('punched'),200)
+        }
+        firstFighter.health<20? healthBarRight.style.backgroundColor='red':'';
+        firstFighter.health -= power;
+        healthBarLeft.style.width = firstFighter.health>0
+            ?`${(firstFighter.health * 100) / startFirstPlayerHealth}%`:'0%';
+        firstFighter.health<20? healthBarLeft.style.backgroundColor='red':'';
+    }
 
     return new Promise((resolve) => {
         document.body.addEventListener("keydown", e => {
@@ -70,12 +98,10 @@ export async function fight(firstFighter, secondFighter) {
                         comboFirstPlayer = '';
                         playerOneIsAbleToCrit = false;
                         const power =  getCrit(firstFighter);
-                        indicateDamage(minusHPRight,power);
-                        secondFighter.health -= power;
                         setTimeout(() => playerOneIsAbleToCrit = true, 10000);
-                        healthBarRight.style.width = secondFighter.health>0
-                            ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
-                        return secondFighter.health <= 0 ? resolve(firstFighter) : null;
+                        indicateCrit(fightersModels[0]);
+                        handlePunchFirstPlayer(power);
+                        return secondFighter.health <= 0 ? resolve(firstFighter) : secondFighter.health;
                     }
                 } else {
                     comboFirstPlayer = '';
@@ -88,12 +114,11 @@ export async function fight(firstFighter, secondFighter) {
                         setRightPlayerRunning();
                         comboSecondPlayer = '';
                         const power =  getCrit(secondFighter);
-                        indicateDamage(minusHPleft,power);
                         firstFighter.health -= power;
                         playerTwoIsAbleToCrit = false;
+                        indicateCrit(fightersModels[1]);
                         setTimeout(() => playerTwoIsAbleToCrit = true, 10000);
-                        healthBarLeft.style.width = firstFighter.health > 0 ?
-                            `${(firstFighter.health * 100) / startFirstPlayerHealth}%` : '0%';
+                        handlePunchSecondPlayer(power)
                         return firstFighter.health <= 0 ? resolve(secondFighter) : null;
                     }
                 } else {
@@ -109,21 +134,16 @@ export async function fight(firstFighter, secondFighter) {
                     setLeftPlayerRunning();
                     const power=getDamage(firstFighter, secondFighter);
                     power === 0 ? fightersModels[1].classList.add('dodged') : secondFighter.health -= power;
-                    indicateDamage(minusHPRight,power);
                     setTimeout(() => fightersModels[1].classList.remove('dodged'), 400);
-                    console.log(secondFighter.health)
-                    healthBarRight.style.width = secondFighter.health > 0
-                        ?`${(secondFighter.health * 100) / startSecondPlayerHealth}%`:'0%';
+                    handlePunchFirstPlayer(power);
                     return secondFighter.health <= 0 ? resolve(firstFighter) : secondFighter.health;
                 }
                 case controls.PlayerTwoAttack: {
                     setRightPlayerRunning();
                     const power = getDamage(secondFighter, firstFighter);
                     power === 0 ? fightersModels[0].classList.add('dodged') : firstFighter.health -= power;
-                    indicateDamage(minusHPleft,power);
                     setTimeout(() => fightersModels[0].classList.remove('dodged'), 400)
-                    healthBarLeft.style.width = firstFighter.health > 0 ?
-                        `${(firstFighter.health * 100) / startFirstPlayerHealth}%` : '0%';
+                    handlePunchSecondPlayer(power);
                     return firstFighter.health <= 0 ? resolve(secondFighter) : firstFighter.health;
                 }
             }

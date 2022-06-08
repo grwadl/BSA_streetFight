@@ -93,6 +93,29 @@
   color:red;
   position: absolute;
 }
+.arena___fighter.critHit::before{
+  content: 'CRIT HIT!!!';
+  font-size: 24px;
+  top:-80px;
+  background-color: black;
+  padding: 5px;
+  color:red;
+}
+.arena___fighter.punched{
+  position: relative;
+  animation: punched 0.1s infinite;
+}
+@keyframes punched {
+  0%, 25% {
+    left: -1px;
+    transform: translateX(-10%) translateY(-3%);
+  }
+  50%, 100% {
+    left: 1px;
+    transform: translateX(10%) translateY(3%);
+  }
+}
+
 .arena___right-fighter.onBlock{
   position: relative;
   left: 150px;
