@@ -57,23 +57,41 @@
   position: relative;
 }
 .minusHP{
+  position:relative;
   width: 40px;
   height: 30px;
   font-size: 32px;
   color:red;
+  top:170px;
+  font-weight: bold;
+  animation: goToTop 1s infinite;
+}
+@keyframes goToTop {
+  25%{
+    top:170px;
+    opacity: 1;
+  }
+  75%{
+    top: 40px;
+    opacity: 1;
+  }
+  100%{
+    top:-20px;
+    opacity: 0;
+  }
 }
 .arena___health-bar {
   height: 100%;
   width: 100%;
   background-color: #ebd759;
 }
-.fighter-preview___img.punching{
-  position: relative;
-  left: 567px;
-}
-.fighter-preview___img.punching1{
+.arena___right-fighter .fighter-preview___img.punching{
   position: relative;
   right: 567px;
+}
+.arena___left-fighter .fighter-preview___img.punching{
+  position: relative;
+  left: 567px;
 }
 .arena___fighter.onBlock.dodged::before{
   content: 'DODGED';
@@ -97,9 +115,23 @@
   content: 'CRIT HIT!!!';
   font-size: 24px;
   top:-80px;
-  background-color: black;
+  font-weight: bold;
   padding: 5px;
   color:red;
+  position: relative;
+  animation: critToTop 3s infinite;
+}
+@keyframes critToTop{
+  25%{
+    top:-80px;
+  }
+  75%{
+    opacity: 1;
+  }
+  100%{
+    top:-300px;
+    opacity: 0;
+  }
 }
 .arena___fighter.punched{
   position: relative;
@@ -123,4 +155,16 @@
 .arena___left-fighter.onBlock{
   position: relative;
   right: 150px;
+}
+.arena___left-fighter.beaten img{
+  position: relative;
+  top:95px;
+  transform: rotate(-90deg);
+  transition-duration: .3s;
+}
+.arena___right-fighter.beaten img{
+  position: relative;
+  top:95px;
+  transform:  scale(-1, 1) rotate(-90deg);
+  transition-duration: .3s;
 }

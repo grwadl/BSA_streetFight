@@ -9,6 +9,8 @@ export function renderArena(selectedFighters) {
     const [firstPlayer, secondPlayer] = selectedFighters;
     root.innerHTML = '';
     root.append(arena);
+    firstPlayer.ableCrit = true;
+    secondPlayer.ableCrit = true;
    fight(firstPlayer,secondPlayer)
        .then(res=>showWinnerModal(res));
 }

@@ -13,8 +13,22 @@
 }
 .fighter-preview__info{
   color:white;
-  background-color: black;
-  padding: 5px;
+  background-color: #837323;
+  max-width:100px;
+  padding: 10px 15px;
+  border-radius: 16px;
+  position: relative;
+
+}
+.fighter-preview__info:after{
+  position: absolute;
+  top: 5px;
+  content: '';
+  border-radius: 16px;
+  border:2px solid #fff;
+  left: 5px;
+  width: 90%;
+  height: 90%;
 }
 .fighter-preview___img{
   max-height: 300px;
